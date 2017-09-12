@@ -1,0 +1,3 @@
+[flake8]
+ignore = E201,E202 # whitespace before/after bracket
+         ,E501 # line too long
