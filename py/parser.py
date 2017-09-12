@@ -4,7 +4,7 @@ import pprint as pp
 
 
 # classes
-from pyparsing import Combine, Literal, CaselessLiteral, Word, Optional, OneOrMore, Or, Group, Dict
+from pyparsing import Combine, Literal, CaselessLiteral, Word, Optional, OneOrMore, Or, Group, Dict, ParseException
 # variables
 from pyparsing import nums
 # functions
@@ -44,11 +44,21 @@ line_parser = floatnumber + Word("info").suppress() + variable + (singleValue ^ 
 
 # for line in file("../results/MemoryAnalysis/totals_9-9-17_2232.log"):
 lines = []
-for line in test_lines:
-    lines.append(line_parser.searchString(line)[0])
+entries = {}
+log_file = file("../../results/MemoryAnalysis/totals_9-9-17_2232.log")
+for i, line in enumerate(log_file):
+    try:
+        parsed_line = line_parser.parseString(line)
+    except ParseException:
+        continue
+    lines.append(parsed_line)
+    key = lines[i][1]
+    if key not in entries:
+        entries[key] = []
+    entries[key].append(i)
 
 
-pp.pprint(lines)
+pp.pprint(entries)
 # t1 = np.arange(0.0, 5.0, 0.1)
 # t2 = np.arange(0.0, 10.0, 0.2)
 
