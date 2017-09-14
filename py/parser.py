@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import pprint as pp
 
 
 # classes
@@ -46,6 +44,7 @@ line_parser = floatnumber + Word("info").suppress() + variable + (singleValue ^ 
 lines = []
 entries = {}
 log_file = file("../../results/MemoryAnalysis/totals_9-9-17_2232.log")
+print("parsing logfile")
 for i, line in enumerate(log_file):
     try:
         parsed_line = line_parser.parseString(line)
@@ -58,7 +57,12 @@ for i, line in enumerate(log_file):
     entries[key].append(i)
 
 
-pp.pprint(entries)
+print("parsing complete")
+print("saving to npz")
+
+np.savez("parsed_logfile", lines=lines, entries=entries)
+
+print("save complete")
 # t1 = np.arange(0.0, 5.0, 0.1)
 # t2 = np.arange(0.0, 10.0, 0.2)
 
