@@ -1,4 +1,5 @@
 import numpy as np
+import re
 
 
 # classes
@@ -37,30 +38,38 @@ test_lines = [ "0.0124178    info         constructor: size 5760b; ",
                "0.012465     info         shrink_to_fit: old_size 5760b; old_capacity 5760b; new_size 5760b; new_capacity 5760b; ",
                "0.0124764    info         reserve: old_size 5760b; old_capacity 5760b; new_size 5760b; new_capacity 5760b; "]
 
+r = re.compile(r"\s*(\d+(\.\d*)?)\s*(\w+)\s*(\w+)")
 
 line_parser = floatnumber + Word("info").suppress() + variable + (singleValue ^ dictValue)
 
 # for line in file("../results/MemoryAnalysis/totals_9-9-17_2232.log"):
-lines = []
 entries = {}
 log_file = file("../../results/Mem_Analysis_2/filtered_28-09-17_1720.log")
+
 print("parsing logfile")
 for i, line in enumerate(log_file):
+    if i % 500000 == 0:
+        print " ".join(map(str, ("line", i)))
+
     try:
-        parsed_line = line_parser.parseString(line)
+        key = r.match(line).group(4)
+        if key not in entries:
+            entries[key] = []
+        entries[key].append(i)
     except ParseException:
         continue
-    lines.append(parsed_line)
-    key = lines[i][1]
-    if key not in entries:
-        entries[key] = []
-    entries[key].append(i)
+    except AttributeError:
+        if "eof" not in line:
+            print line
+            print i
+            print r.match(line).groups
+            quit()
 
 
 print("parsing complete")
 print("saving to npz")
 
-np.savez("parsed_filtered_28-09-17_1720", lines=lines, entries=entries)
+np.savez("parsed_filtered_28-09-17_1720", entries=entries)
 
 print("save complete")
 # t1 = np.arange(0.0, 5.0, 0.1)
