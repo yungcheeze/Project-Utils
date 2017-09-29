@@ -28,21 +28,11 @@ singleValue = number
 singleValue.setParseAction(lambda t: int(t[0]))
 dictValue = Literal(":").suppress() + Dict(OneOrMore(Group(variable + memSize + Literal(";").suppress())))
 
-# print(floatnumber.searchString(" hi 33.45 my 7.2 friend"))
-# print(variable.searchString("winning when_is it EveR_not_Bad"))
-
-
-test_lines = [ "0.0124178    info         constructor: size 5760b; ",
-               "0.0124438    info         numObj 1    ",
-               "0.0124547    info         total_mem 5760",
-               "0.012465     info         shrink_to_fit: old_size 5760b; old_capacity 5760b; new_size 5760b; new_capacity 5760b; ",
-               "0.0124764    info         reserve: old_size 5760b; old_capacity 5760b; new_size 5760b; new_capacity 5760b; "]
+line_parser = floatnumber + Word("info").suppress() + variable + (singleValue ^ dictValue)
 
 r = re.compile(r"\s*(\d+(\.\d*)?)\s*(\w+)\s*(\w+)")
 
-line_parser = floatnumber + Word("info").suppress() + variable + (singleValue ^ dictValue)
 
-# for line in file("../results/MemoryAnalysis/totals_9-9-17_2232.log"):
 entries = {}
 log_file = file("../../results/Mem_Analysis_2/filtered_28-09-17_1720.log")
 
@@ -72,15 +62,3 @@ print("saving to npz")
 np.savez("parsed_filtered_28-09-17_1720", entries=entries)
 
 print("save complete")
-# t1 = np.arange(0.0, 5.0, 0.1)
-# t2 = np.arange(0.0, 10.0, 0.2)
-
-# plt.plot(t1, t2, 'k')
-# plt.show()
-# nums = [ [0.0124178, "hi"],
-#          [0.0124438, "man"],
-#          [0.0124547, "does"],
-#          [0.012465, "go"],
-#          [0.0124764, "win"]]
-
-# print(map(lambda t: t[0], nums))
