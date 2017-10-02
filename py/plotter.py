@@ -1,15 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from pyparser import get_line_val, get_dict_val
 # import pprint as pp
 
 print("loading files")
 
-data = np.load("./parsed_logfile.npz")
+data = np.load("./parsed_filtered_28-09-17_1720.npz")
 
 print(data.files)
 
-lines = data['lines']
-entries = data['entries'].item()
+log_file_path = "../../results/Mem_Analysis_2/filtered_28-09-17_1720.log"
+# entries = data['entries'].item()
+
+print "files loaded"
 
 
 def color_y_axis(ax, color):
@@ -23,41 +26,47 @@ def b_to_mb(val):
     return val / 1000000
 
 
-def total_mem_y():
-    global lines
+def plot_single_val(stmt_key):
     global entries
-    for i in entries.get("total_mem"):
-        yield b_to_mb(lines[i][2])  # memory Usage
+    global log_file_path
+    for i in entries.get(stmt_key):
+        yield get_line_val(log_file_path, i, "single_val")
 
 
-def plot_timestamp(indices):
-    global lines
-    for i in indices:
-        yield lines[i][0]  # timestamp
-
-
-def plot_constructor_alloc():
-    global lines
+def plot_dict_val(stmt_key, dict_key):
     global entries
-    for i in entries.get("constructor"):
-        yield lines[i]["size"]
+    global log_file_path
+    for i in entries.get(stmt_key):
+        yield get_dict_val(log_file_path, i, dict_key)
+
+
+def plot_timestamp(stmt_key):
+    global entries
+    global log_file_path
+    for i in entries.get(stmt_key):
+        yield get_line_val(log_file_path, i, "timestamp")
+
 
 
 print("init plots")
 
 fig, ax = plt.subplots()
 
-h1, = ax.plot(list(plot_timestamp(entries["total_mem"])), list(total_mem_y()), 'r', label="total memory allocated")
+h1, = ax.plot(list(plot_timestamp("total_capacity")), list(plot_single_val("total_capacity")), 'r', label="total memory allocated")
+print "plot 1 complete"
+h1_2, = ax.plot(list(plot_timestamp("total_size")), list(plot_single_val("total_size")), 'g', label="total used memory (out of total allocated)")
+print "plot 2 complete"
 ax.set_xlabel("time(s)")
 ax.set_ylabel("megabytes")
 
 ax2 = ax.twinx()
-h2, = ax2.plot(list(plot_timestamp(entries["constructor"])), list(plot_constructor_alloc()), 'b', label="memory allocated by call to constructor")
+h2, = ax2.plot(list(plot_timestamp("constructor")), list(plot_dict_val("constructor", "size")), 'b', label="memory allocated by call to constructor")
+print "plot 3 complete"
 ax2.set_ylim([0, 20000])
 ax2.set_ylabel("bytes")
 
 color_y_axis(ax, 'r')
 color_y_axis(ax2, 'b')
 
-ax.legend(loc='upper left', handles=[h1, h2])
+ax.legend(loc='upper left', handles=[h1, h1_2, h2])
 print("finished")
