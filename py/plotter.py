@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pyparser import get_line_val, get_dict_val
+from misc_funcs import make_format
 # import pprint as pp
 
 print("loading files")
@@ -52,22 +53,31 @@ def plot_timestamp(stmt_key, conversion_func=str):
 print("init plots")
 
 fig, ax = plt.subplots()
-
-h1, = ax.plot(list(plot_timestamp("total_capacity")), list(plot_single_val("total_capacity")), 'r', label="total memory allocated")
-print "plot 1 complete"
-h1_2, = ax.plot(list(plot_timestamp("total_size")), list(plot_single_val("total_size")), 'g', label="total used memory (out of total allocated)")
-print "plot 2 complete"
 ax.set_xlabel("time(s)")
 ax.set_ylabel("megabytes")
 
+# x1 = list(plot_timestamp("total_capacity"))
+# y1 = list(plot_single_val("total_capacity", conversion_func=to_mb))
+h1, = ax.plot(x1, y1, 'r', label="total memory allocated")
+print "plot 1 complete"
+
+# x1_2 = list(plot_timestamp("total_size"))
+# y1_2 = list(plot_single_val("total_size", conversion_func=to_mb))
+h1_2, = ax.plot(x1_2, y1_2, 'g', label="total used memory (out of total allocated)")
+print "plot 2 complete"
+
 ax2 = ax.twinx()
-h2, = ax2.plot(list(plot_timestamp("constructor")), list(plot_dict_val("constructor", "size")), 'b', label="memory allocated by call to constructor")
-print "plot 3 complete"
-ax2.set_ylim([0, 20000])
 ax2.set_ylabel("bytes")
+
+# x2 = list(plot_timestamp("constructor"))
+# y2 = list(plot_dict_val("constructor", "size"))
+h2, = ax2.plot(x2, y2, 'b_', label="memory allocated by call to constructor")
+print "plot 3 complete"
 
 color_y_axis(ax, 'r')
 color_y_axis(ax2, 'b')
 
-ax.legend(loc='upper left', handles=[h1, h1_2, h2])
+ax2.format_coord = make_format(ax2, ax)
+
+ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., handles=[h1, h1_2, h2])
 print("finished")
