@@ -22,29 +22,30 @@ def color_y_axis(ax, color):
     return None
 
 
-def b_to_mb(val):
+def to_mb(val):
+    val = float(val)
     return val / 1000000
 
 
-def plot_single_val(stmt_key):
+def plot_single_val(stmt_key, conversion_func=str):
     global entries
     global log_file_path
     for i in entries.get(stmt_key):
-        yield get_line_val(log_file_path, i, "single_val")
+        yield conversion_func(get_line_val(log_file_path, i, "single_val"))
 
 
-def plot_dict_val(stmt_key, dict_key):
+def plot_dict_val(stmt_key, dict_key, conversion_func=str):
     global entries
     global log_file_path
     for i in entries.get(stmt_key):
-        yield get_dict_val(log_file_path, i, dict_key)
+        yield conversion_func(get_dict_val(log_file_path, i, dict_key))
 
 
-def plot_timestamp(stmt_key):
+def plot_timestamp(stmt_key, conversion_func=str):
     global entries
     global log_file_path
     for i in entries.get(stmt_key):
-        yield get_line_val(log_file_path, i, "timestamp")
+        yield conversion_func(get_line_val(log_file_path, i, "timestamp"))
 
 
 
