@@ -1,0 +1,30 @@
+* New flow
+** Generator process
+*** params
+**** stmt_key
+**** number extractor
+***** can be index, or dict_key
+*** things needed
+**** counter
+**** linecache lib
+*** finding parsed line
+**** advance counter
+**** search re for stmt_key
+**** if stmt_key found
+***** parse line
+***** and yield desired number
+**** else advance counter
+
+* re parser
+  [[https://regex101.com/r/eNCbag/3][saved regex]]
+  [[https://regex101.com/r/toWKv0/1][dict regex]]
+** use ~re.findall~ or ~re.finditer~ to get extract dict matches
+
+* Plot Suggestions
+** individual heap sizes
+
+* Observations
+- calls to resize() don't change capacity (only size)
+* What to look for
+- Address changes
+  - is v[0] == v.begin()?
